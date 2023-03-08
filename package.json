@@ -17,12 +17,20 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "proto:install": "yarn add git+https://github.com/abahernest/foodhut-grpc-proto.git",
+    "proto:order": "protoc --plugin=node_modules/.bin/protoc-gen-ts_proto -I=./node_modules/foodhut-grpc-proto/proto --ts_proto_out=src/order/ node_modules/foodhut-grpc-proto/proto/order.proto --ts_proto_opt=nestJs=true --ts_proto_opt=fileSuffix=.pb",
+    "proto:dispatch": "protoc --plugin=node_modules/.bin/protoc-gen-ts_proto -I=./node_modules/foodhut-grpc-proto/proto --ts_proto_out=src/dispatch/ node_modules/foodhut-grpc-proto/proto/dispatch.proto --ts_proto_opt=nestJs=true --ts_proto_opt=fileSuffix=.pb",
+    "proto:all": "yarn proto:order && yarn proto:dispatch"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.8.12",
+    "@grpc/proto-loader": "^0.7.5",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/microservices": "^9.3.9",
     "@nestjs/platform-express": "^9.0.0",
+    "foodhut-grpc-proto": "git+https://github.com/abahernest/foodhut-grpc-proto.git",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
   },
@@ -32,7 +40,7 @@
     "@nestjs/testing": "^9.0.0",
     "@types/express": "^4.17.13",
     "@types/jest": "29.2.4",
-    "@types/node": "18.11.18",
+    "@types/node": "^18.14.6",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
@@ -46,6 +54,7 @@
     "ts-jest": "29.0.3",
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
+    "ts-proto": "^1.140.0",
     "tsconfig-paths": "4.1.1",
     "typescript": "^4.7.4"
   },
