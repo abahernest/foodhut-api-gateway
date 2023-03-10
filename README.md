@@ -1,6 +1,6 @@
 ## Description
 
-[Nest](https://github.com/nestjs/nest) Base API Gateway for FoodHut; A simple food ordering application.
+[FoodHut App](https://github.com/abahernest/foodhut-api-gateway) Base API Gateway for FoodHut; A simple food ordering application.
 
 ### Microservices
 
