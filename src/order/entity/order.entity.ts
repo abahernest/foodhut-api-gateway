@@ -37,6 +37,6 @@ export class Order extends BaseEntity {
   @UpdateDateColumn()
   public updatedAt!: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ nullable: true })
   public deletedAt!: Date;
 }

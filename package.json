@@ -8,10 +8,10 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start": "yarn run:migration && nest start",
+    "start:dev": "yarn run:migration && nest start --watch",
+    "start:debug": "yarn run:migration && nest start --debug --watch",
+    "start:prod": "yarn run:migration && node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -21,7 +21,11 @@
     "proto:install": "yarn add git+https://github.com/abahernest/foodhut-grpc-proto.git",
     "proto:order": "protoc --plugin=node_modules/.bin/protoc-gen-ts_proto -I=./node_modules/foodhut-grpc-proto/proto --ts_proto_out=src/order/proto/ node_modules/foodhut-grpc-proto/proto/order.proto --ts_proto_opt=nestJs=true --ts_proto_opt=fileSuffix=.pb",
     "proto:dispatch": "protoc --plugin=node_modules/.bin/protoc-gen-ts_proto -I=./node_modules/foodhut-grpc-proto/proto --ts_proto_out=src/order/proto/ node_modules/foodhut-grpc-proto/proto/dispatch.proto --ts_proto_opt=nestJs=true --ts_proto_opt=fileSuffix=.pb",
-    "proto:all": "yarn proto:order && yarn proto:dispatch"
+    "proto:all": "yarn proto:order && yarn proto:dispatch",
+    "typeorm": "yarn build && npx typeorm -d dist/db/data-source.js",
+    "generate:migration": "yarn build && yarn typeorm -- migration:generate",
+    "run:migration": "yarn typeorm -- migration:run",
+    "revert:migration": "yarn typeorm -- migration:revert"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.8.12",
