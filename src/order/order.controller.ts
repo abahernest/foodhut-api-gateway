@@ -32,15 +32,21 @@ import {
 import { newOrderValidation, updateOrderValidation } from './validation.pipe';
 import { OrderService } from './order.service';
 import { CustomOrderResponseDto, FetchAllOrdersResponseDto, OrderDto } from './dto/order.dto';
+import { DISPATCH_SERVICE_NAME, DispatchServiceClient } from './proto/dispatch.pb';
 
 
 @Controller('api/v1/order')
 export class OrderController implements OnModuleInit {
   private orderSvc: OrderServiceClient;
 
+  private dispatchSvc: DispatchServiceClient;
+
 
   @Inject(ORDER_SERVICE_NAME)
   private readonly orderClient: ClientGrpc;
+
+  @Inject(DISPATCH_SERVICE_NAME)
+  private  readonly dispatchClient: ClientGrpc;
 
   @Inject(OrderService)
   private readonly  service: OrderService;
@@ -49,6 +55,7 @@ export class OrderController implements OnModuleInit {
   public onModuleInit(): void {
     this.orderSvc =
       this.orderClient.getService<OrderServiceClient>(ORDER_SERVICE_NAME);
+    this.dispatchSvc = this.dispatchClient.getService<DispatchServiceClient>(DISPATCH_SERVICE_NAME)
   }
 
   @Post()
@@ -56,7 +63,11 @@ export class OrderController implements OnModuleInit {
   private async createOrder( @Req() req: Request, @Body() body: CreateOrderRequest ): Promise<Observable<CreateOrderResponse>> {
 
     // handover to order processing microservice
-    return this.orderSvc.createOrder(body);
+    const order = this.orderSvc.createOrder(body);
+
+    order.subscribe((value)=> this.dispatchSvc.monitorDispatch({ orderId: value.id }))
+
+    return order;
   }
 
   @Patch()

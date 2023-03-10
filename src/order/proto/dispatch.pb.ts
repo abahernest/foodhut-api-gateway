@@ -9,8 +9,8 @@ export interface MonitorDispatchRequest {
 }
 
 export interface MonitorDispatchResponse {
-  status: string;
-  error: string[];
+  code: number;
+  message: string;
 }
 
 export const DISPATCH_PACKAGE_NAME = "dispatch";
