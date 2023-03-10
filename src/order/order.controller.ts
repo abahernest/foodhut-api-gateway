@@ -5,7 +5,7 @@ import {
   OnModuleInit,
   Req,
   UsePipes,
-  Body, Patch, Res, HttpException,
+  Body, Patch, Res, HttpException, Get, ParseEnumPipe, DefaultValuePipe, ParseIntPipe, Query,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Observable, firstValueFrom } from 'rxjs';
@@ -19,6 +19,8 @@ import {
   UpdateOrderResponse,
 } from './proto/order.pb';
 import { newOrderValidation, updateOrderValidation } from './validation.pipe';
+import { OrderService } from './order.service';
+import { FetchAllOrdersResponseDto } from './dto/order.dto';
 
 
 @Controller('api/v1/order')
@@ -28,6 +30,9 @@ export class OrderController implements OnModuleInit {
 
   @Inject(ORDER_SERVICE_NAME)
   private readonly orderClient: ClientGrpc;
+
+  @Inject(OrderService)
+  private readonly  service: OrderService;
 
 
   public onModuleInit(): void {
@@ -57,6 +62,15 @@ export class OrderController implements OnModuleInit {
     }
 
     return responseStream;
+  }
+
+  @Get()
+  private async fetchAllOrders(
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+  ): Promise<Array<FetchAllOrdersResponseDto>> {
+
+    return this.service.fetchAllOrders(limit, page);
   }
 
 }
