@@ -17,3 +17,27 @@ export class FetchAllOrdersResponseDto extends Order {
   updatedAt: Date;
 
 }
+
+export class OrderDto {
+  id: string;
+
+  name: string;
+
+  status: OrderStatus;
+
+  address: string;
+
+  dispatched: boolean;
+
+  createdAt: Date;
+
+  updatedAt: Date;
+}
+
+export class CustomOrderResponseDto{
+
+  code: number;
+
+  message: string;
+  data?: OrderDto;
+}

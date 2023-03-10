@@ -5,7 +5,18 @@ import {
   OnModuleInit,
   Req,
   UsePipes,
-  Body, Patch, Res, HttpException, Get, ParseEnumPipe, DefaultValuePipe, ParseIntPipe, Query,
+  Body,
+  Patch,
+  Res,
+  HttpException,
+  Get,
+  ParseEnumPipe,
+  DefaultValuePipe,
+  ParseIntPipe,
+  Query,
+  Delete,
+  ParseUUIDPipe,
+  Param,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Observable, firstValueFrom } from 'rxjs';
@@ -20,7 +31,7 @@ import {
 } from './proto/order.pb';
 import { newOrderValidation, updateOrderValidation } from './validation.pipe';
 import { OrderService } from './order.service';
-import { FetchAllOrdersResponseDto } from './dto/order.dto';
+import { CustomOrderResponseDto, FetchAllOrdersResponseDto, OrderDto } from './dto/order.dto';
 
 
 @Controller('api/v1/order')
@@ -73,4 +84,22 @@ export class OrderController implements OnModuleInit {
     return this.service.fetchAllOrders(limit, page);
   }
 
+  @Delete('/:id')
+  private async deleteOrder(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<CustomOrderResponseDto> {
+
+    const order: OrderDto = await this.service.findOrderById(id);
+
+    if (!order){
+      throw new HttpException( {code: 400, message: "resource not found"}, 400)
+    }
+    this.service.deleteOrder(id);
+
+    return {
+      code: 200,
+      message: 'success',
+      data: order,
+    }
+  }
 }
