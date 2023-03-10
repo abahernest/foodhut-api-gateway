@@ -5,7 +5,7 @@ import {
   OnModuleInit,
   Req,
   UsePipes,
-  Body,
+  Body, Patch, Res, HttpException,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Observable, firstValueFrom } from 'rxjs';
@@ -15,15 +15,20 @@ import {
   OrderServiceClient,
   ORDER_SERVICE_NAME,
   CreateOrderRequest,
+  UpdateOrderRequest,
+  UpdateOrderResponse,
 } from './proto/order.pb';
-import { newOrderValidation } from './validation.pipe';
+import { newOrderValidation, updateOrderValidation } from './validation.pipe';
+
 
 @Controller('api/v1/order')
 export class OrderController implements OnModuleInit {
   private orderSvc: OrderServiceClient;
 
+
   @Inject(ORDER_SERVICE_NAME)
   private readonly orderClient: ClientGrpc;
+
 
   public onModuleInit(): void {
     this.orderSvc =
@@ -34,9 +39,24 @@ export class OrderController implements OnModuleInit {
   @UsePipes(newOrderValidation)
   private async createOrder( @Req() req: Request, @Body() body: CreateOrderRequest ): Promise<Observable<CreateOrderResponse>> {
 
-    // handover to microservice
-    const orderServiceResponse = this.orderSvc.createOrder(body);
-
-    return orderServiceResponse;
+    // handover to order processing microservice
+    return this.orderSvc.createOrder(body);
   }
+
+  @Patch()
+  @UsePipes(updateOrderValidation)
+  private async updateOrder( @Req() req: Request, @Body() body: UpdateOrderRequest ): Promise<Observable<UpdateOrderResponse>> {
+
+    // handover to order processing microservice
+    const responseStream = this.orderSvc.updateOrder(body);
+
+    const responseObj = await firstValueFrom(responseStream);
+
+    if (responseObj.code != 200){
+      throw new HttpException(responseObj, responseObj.code);
+    }
+
+    return responseStream;
+  }
+
 }

@@ -27,3 +27,10 @@ export const newOrderValidation = new JoiValidationPipe(
     address: Joi.string().required(),
   }),
 );
+
+export const updateOrderValidation = new JoiValidationPipe(
+  Joi.object({
+    id: Joi.string().uuid(),
+    address: Joi.string().required(),
+  }),
+);

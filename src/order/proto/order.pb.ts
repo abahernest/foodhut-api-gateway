@@ -19,21 +19,39 @@ export interface CreateOrderResponse {
   updatedAt: string;
 }
 
+export interface UpdateOrderRequest {
+  id: string;
+  address?: string | undefined;
+  status?: string | undefined;
+}
+
+export interface UpdateOrderResponse {
+  code: number;
+  message: string;
+  data?: CreateOrderResponse | undefined;
+}
+
 export const ORDER_PACKAGE_NAME = "order";
 
 export interface OrderServiceClient {
   createOrder(request: CreateOrderRequest): Observable<CreateOrderResponse>;
+
+  updateOrder(request: UpdateOrderRequest): Observable<UpdateOrderResponse>;
 }
 
 export interface OrderServiceController {
   createOrder(
     request: CreateOrderRequest,
   ): Promise<CreateOrderResponse> | Observable<CreateOrderResponse> | CreateOrderResponse;
+
+  updateOrder(
+    request: UpdateOrderRequest,
+  ): Promise<UpdateOrderResponse> | Observable<UpdateOrderResponse> | UpdateOrderResponse;
 }
 
 export function OrderServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["createOrder"];
+    const grpcMethods: string[] = ["createOrder", "updateOrder"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("OrderService", method)(constructor.prototype[method], method, descriptor);
