@@ -43,6 +43,10 @@
 
 10. I used a shared repository to distribute the proto files among the 3 services. With a script in the `package.json` file, the github repo is installed as a package in the `node_modules` folder. Hence, providing a single source of truth for our proto files.
 
+## Postman Doc
+
+[Postman Doc](https://documenter.getpostman.com/view/11044390/2s93JtQ44t)
+
 
 ## Environment Setup
 
